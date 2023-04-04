@@ -1,9 +1,57 @@
-import React from 'react';
+import React, { Children } from 'react';
 import ReactDom from 'react-dom/client';
+import { createBrowserRouter,RouterProvider,Outlet } from 'react-router-dom';
 
-const AppLayout=()=>{
-   return <h1>A react app</h1>
+//importing Components
+import Header from './src/Components/Header'
+import Error from './src/Components/Error'
+import About from './src/Components/About'
+import Login from './src/Components/Login'
+import Signup from './src/Components/Signup'
+
+
+const HeaderLayout=()=>{
+ return(
+   <>
+   <Header />
+   <Outlet />
+   </>
+ )
 }
+const AuthenticationLayout=()=>{
+   return(
+      <Outlet />
+   )
+}
+const appRouter = createBrowserRouter([
+   {
+     path: "/",
+     element: <HeaderLayout />,
+     errorElement: <Error />,
+     children: [
+       {
+         path: "/about",
+         element: <About />,
+       },
+     ],
+   },
+   {
+      path:"/auth",
+      element:<AuthenticationLayout />,
+      errorElement: <Error />,
+      children: [
+         {
+           path: "login",
+           element: <Login />,
+         },
+         {
+            path: "signup",
+            element: < Signup/>,
+          },
+       ],
+
+   }
+ ]);
 
 const root=ReactDom.createRoot(document.getElementById('root'));
-root.render(<AppLayout/>);
+root.render(<RouterProvider router={appRouter}/>);
