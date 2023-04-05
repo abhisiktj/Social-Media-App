@@ -8,7 +8,7 @@ import Error from './src/Components/Error'
 import About from './src/Components/About'
 import Login from './src/Components/Login'
 import Signup from './src/Components/Signup'
-
+import Body from  './src/Components/Body';
 
 const HeaderLayout=()=>{
  return(
@@ -33,6 +33,10 @@ const appRouter = createBrowserRouter([
          path: "/about",
          element: <About />,
        },
+       {
+        path: "/",
+        element: <Body />,
+      },
      ],
    },
    {
