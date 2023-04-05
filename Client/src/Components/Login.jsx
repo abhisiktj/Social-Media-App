@@ -51,8 +51,8 @@ const Login=()=>{
     return (
         <div >
             <div className="flex flex-col items-center">
-            <p className="text-6xl text-sky-600 mb-5">AskIt</p>
-            <p className="text-2xl ,mb-1">Login</p>
+            <p className="text-6xl text-sky-600 mb-5"><Link to="/">AskIt</Link></p>
+            <p className="text-2xl mb-2"> Login</p>
             <p className="text-xl mb-2">New to AskIt?<Link to="/auth/signup" className="underline-offset-4 text-blue-600">Signup</Link></p>
             </div>
 
@@ -87,7 +87,7 @@ const Login=()=>{
                  </div>
 
                  <button 
-                 type="submit" className="m-3 bg-blue-700 text-white w-80 p-2 rounded-lg text-lg hover:bg-blue-500" 
+                 type="submit" className="m-3 bg-blue-700 text-white w-80 p-2 rounded-lg text-lg hover:bg-blue-500 border-black" 
                  >Signup</button>
 
             </form>

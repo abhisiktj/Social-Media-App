@@ -60,8 +60,8 @@ const Signup=()=>{
     return (
         <div >
             <div className="flex flex-col items-center">
-            <p className="text-6xl text-sky-600 mb-5">AskIt</p>
-            <p className="text-2xl ,mb-1">Signup</p>
+            <p className="text-6xl text-sky-600 mb-5"><Link to="/">AskIt</Link></p>
+            <p className="text-2xl mb-2"> Signup</p>
             <p className="text-xl mb-2">Already have an account?<Link to="/auth/login" className="underline-offset-4 text-blue-600">Login</Link></p>
             </div>
 
@@ -108,7 +108,7 @@ const Signup=()=>{
                  <p className="text-xs text-red-700">{passwordError}</p>
                  </div>
                  <button 
-                 type="submit" className="m-3 bg-blue-700 text-white w-80 p-2 rounded-lg text-lg hover:bg-blue-500" 
+                 type="submit" className="m-3 bg-blue-700 text-white w-80 p-2 rounded-lg text-lg hover:bg-blue-500 border-black" 
                  >Signup</button>
             </form>
         </div>
