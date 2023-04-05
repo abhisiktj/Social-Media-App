@@ -16,7 +16,7 @@ const Search=()=>{
     return(
     <input
     className=" p-3 placeholder-sky-800 bg-sky-50 text-sm rounded-lg w-80 :focus outline-sky-900"
-    placeholder="Search a Question"
+    placeholder="Ask It!"
     value={searchText}
     onChange={(Event)=>{
         setSearchText(Event.target.value);
