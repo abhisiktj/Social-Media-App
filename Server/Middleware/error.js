@@ -1,24 +1,19 @@
 const expressAsyncHandler=require('express-async-handler');
+const CustomError=require('../utils/customError')
+const statusCodes=require('http-status-codes');
+
 const notFound=expressAsyncHandler(async(req,res)=>{
-  const error=new Error("Route does not exist");
-  error.statuscode=404;
-  throw error;
-})
+    throw new CustomError('URL Not Available',statusCodes.NOT_FOUND);
+});
+
 
 const errorHandler=async(error,req,res,next)=>{
 console.log(error);
-    if(error.code===11000){
-        error.message=`Duplicate ${Object.keys(error.keyPattern)[0]}`
-        error.statuscode=403;
-    }
 
-error.message=error.message || "Internal Server Error"
-error.statuscode=error.statuscode || 500
+   if(error instanceof CustomError){
+    res.status(error.statusCode).json({success:false,message:error.message});
+   }
 
-  res.status(error.statuscode).json({
-    success:false,
-    message:error.message
-  })
-}
-
-module.exports={notFound,errorHandler};
+req.status(statusCodes.INTERNAL_SERVER_ERROR).json({success:false,message:"Internal Server Error"})
+  }
+module.exports={notFound,errorHandler}

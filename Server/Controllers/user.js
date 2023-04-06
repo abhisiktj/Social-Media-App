@@ -5,10 +5,15 @@ const fs=require('fs').promises;
 const fs2=require('fs');
 const cloudinary=require('cloudinary');
 const User=require('../Models/user');
+const CustomError=require('../utils/customError');
+const statusCodes=require('http-status-codes');
 
 const registerUser=expressAsyncHandler(async(req,res)=>{
 
     const {username,email,password}=req.body;
+    if(!username || !email || !password){
+        throw new CustomError("Provide required fields",statusCodes.BAD_REQUEST);
+    }
     const response=await fetch(`https://api.dicebear.com/6.x/pixel-art/png?seed=${username}`);
     const blob=await response.blob();
     const arrayBuffer = await blob.arrayBuffer();
@@ -27,8 +32,9 @@ const user=await User.create({
 })
  
 
-res.status(201).json({
+res.status(statusCodes.CREATED).json({
     success:true,
+    data:user
 })
  
 });
