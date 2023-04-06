@@ -4,18 +4,21 @@ const statusCodes=require('http-status-codes');
 
 const validator=require('validator');
 const CustomError = require('../utils/customError');
-const addAnswer=expressAsyncHandler(async()=>{
+const Question = require('../Models/question');
+const addAnswer=expressAsyncHandler(async(req,res)=>{
     
     const {answeredTo,answeredBy,content}= req.body;
     if(!answeredTo || !answeredBy || !content){
-       throw new CustomError("Bad Request",statusCodes.BAD_REQUEST);
+       throw new CustomError("Bad Request-Empty Fields",statusCodes.BAD_REQUEST);
     }
 
-    if(!validator.isMongoid(answeredBy) || !validator.isMongoid(answeredBy) ){
+    if(!validator.isMongoId(answeredTo) || !validator.isMongoId(answeredBy) ){
         throw new Error("Incorrect Object Id ",statusCodes.BAD_REQUEST);
     }
+    
     const answer=await Answer.create(req.body);
-
+    const question=await Question.updateOne({_id:answeredTo},{$push:{answeredBy:answeredBy}});
+  
     res.status(statusCodes.CREATED).json({success:true,data:answer});
 
 })

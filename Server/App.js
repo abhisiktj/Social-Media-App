@@ -5,6 +5,8 @@ const cloudinary=require('cloudinary');
 
 const {notFound, errorHandler}=require('./Middleware/error');
 const userRouter=require('./Routes/user');
+const questionRouter=require('./Routes/question');
+const answerRouter=require('./Routes/answer');
 
 const app=express();
 app.use(express.json());
@@ -15,6 +17,9 @@ cloudinary.v2.config({
 });
 
 app.use('/user',userRouter);
+app.use('/question',questionRouter);
+app.use('/answer',answerRouter);
+
 
 app.use(notFound);
 app.use(errorHandler);

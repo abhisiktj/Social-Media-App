@@ -9,18 +9,24 @@ import About from './src/Components/About'
 import Login from './src/Components/Login'
 import Signup from './src/Components/Signup'
 import Body from  './src/Components/Body';
+import { Provider } from 'react-redux';
+import store from './src/utils/store';
 
 const HeaderLayout=()=>{
  return(
    <>
-   <Header />
-   <Outlet />
+   <Provider store={store}>
+     <Header />
+     <Outlet />
+   </Provider>
    </>
  )
 }
 const AuthenticationLayout=()=>{
    return(
+    <Provider store={store}>
       <Outlet />
+    </Provider>
    )
 }
 const appRouter = createBrowserRouter([

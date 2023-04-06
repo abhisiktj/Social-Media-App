@@ -7,11 +7,11 @@ const answerSchema=mongoose.Schema({
         required:[true,'']
     },
     answeredBy:{
-     type: Schema.Types.ObjectId, 
+     type: mongoose.Schema.Types.ObjectId, 
     ref: 'User' 
     },
     answeredTo:{
-     type: Schema.Types.ObjectId, 
+     type: mongoose.Schema.Types.ObjectId, 
     ref: 'Question' 
     }
 })

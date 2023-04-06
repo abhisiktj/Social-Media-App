@@ -13,7 +13,7 @@ const addQuestion=expressAsyncHandler(async(req,res)=>{
      if(!validator.isMongoId(askedBy))
       throw new CustomError("Asker's Id invalid",statusCodes.BAD_REQUEST)
 
-     const user=await user.find({_id:askedBy});
+     const user=await User.find({_id:askedBy});
      
      if(!user)
       throw new CustomError("Question Asked by an unregisterd user",statusCodes.BAD_REQUEST);
@@ -37,7 +37,7 @@ const getQuestionById=expressAsyncHandler(async(req,res)=>{
 })
 
 const updateQuestionLikes=expressAsyncHandler(async(req,res)=>{
-    const id=req.body.id;
+    const id=req.params.id;
     const likes=req.body.likes;
     if(!validator.isMongoId(id))
       throw new CustomError("Invalid Question Id",statusCodes.BAD_REQUEST);
@@ -51,19 +51,18 @@ const updateQuestionLikes=expressAsyncHandler(async(req,res)=>{
       res.status(statusCodes.CREATED).json({
         success:true,
         data:question
-
       })
 })
 
 
-const getAllQuestion=expressAsyncHandler(async()=>{
+const getAllQuestion=expressAsyncHandler(async(req,res)=>{
 
   const page=Number(req.query.page) || 1;
   const limit=Number(req.query.limit) || 2;
 
   const skip= (page-1)*limit;
 
-  const questions=await Question.find({}).sort({createdAt:desc}).skip(skip);
+  const questions=await Question.find({}).sort({createdAt:-1}).skip(skip);
     
   if(!questions){
     throw new Error("No Question Available",statusCodes.NOT_FOUND);
@@ -93,6 +92,7 @@ const getQuestionsByUserId=expressAsyncHandler(async()=>{
     })
 
 })
+
 module.exports={
     addQuestion,
     getQuestionById,

@@ -14,6 +14,6 @@ console.log(error);
     res.status(error.statusCode).json({success:false,message:error.message});
    }
 
-req.status(statusCodes.INTERNAL_SERVER_ERROR).json({success:false,message:"Internal Server Error"})
+res.status(statusCodes.INTERNAL_SERVER_ERROR).json({success:false,message:"Internal Server Error"})
   }
 module.exports={notFound,errorHandler}

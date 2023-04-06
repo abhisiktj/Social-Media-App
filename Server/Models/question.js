@@ -9,8 +9,9 @@ const questionSchema=mongoose.Schema({
     desc:{
         type:String,
     },
+
     askedBy:{ 
-    type: Schema.Types.ObjectId, 
+    type: mongoose.Schema.Types.ObjectId, 
     ref: 'User',
     required:true
    },
@@ -19,12 +20,14 @@ const questionSchema=mongoose.Schema({
     type:Number,
     default:0
    },
-   
-   answeredBY:
-    [{ type: Schema.Types.ObjectId, 
-        ref: 'User' }]
+
+   answeredBy:{
+    type:[{ type: mongoose.Schema.Types.ObjectId, 
+        ref: 'User' }],
+    default:[]
+    }
    ,
 },{timestamps:true})
 
 
-module.exports=mongoose.model(questionSchema,Question);
+module.exports=mongoose.model("Question",questionSchema);

@@ -1,6 +1,7 @@
 import { useState } from "react";
 import { Link } from "react-router-dom";
-
+import {useDispatch} from 'react-redux';
+import { setCredentials } from "../utils/slices/authSlice";
 const Signup=()=>{
     const [username,setUsername]=useState("");
     const [email,setEmail]=useState("");
@@ -9,6 +10,27 @@ const Signup=()=>{
     const [usernameError,setUsernameError]=useState("");
     const [emailError,setEmailError]=useState("");
     const [passwordError,setPasswordError]=useState("");
+    
+    const getData=async(url)=>{
+       
+        const response=await fetch(url,{
+            method:"POST",
+            body:JSON.stringify({
+              username,email,password
+            }),
+            headers:{
+                'Content-type':'application/json; charset=UTF-8',
+            }
+        })
+        const json=await response.json();
+        const {user,token}=json.data;
+        dispatch(setCredentials({user,token}))
+    }
+    useState(()=>{
+      getData('/api/user/register');
+     },[])
+
+    const  dispatch=useDispatch();
 
     const validateForm=()=>{
         let validated=true;
@@ -55,7 +77,6 @@ const Signup=()=>{
         if(!validateForm())
           return;
 
-    console.log("form validated");
     }
     return (
         <div >
