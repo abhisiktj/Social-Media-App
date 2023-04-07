@@ -38,13 +38,28 @@ const getQuestionById=expressAsyncHandler(async(req,res)=>{
 
 const updateQuestionLikes=expressAsyncHandler(async(req,res)=>{
     const id=req.params.id;
-    const likes=req.body.likes;
-    if(!validator.isMongoId(id))
-      throw new CustomError("Invalid Question Id",statusCodes.BAD_REQUEST);
+    const userId=req.body.userId;
+
+    if(!validator.isMongoId(id) || !validator.isMongoId(userId))
+      throw new CustomError("Invalid Id",statusCodes.BAD_REQUEST);
     
-      let question=await Question.findOneAndUpdate({_id:id},{likes},{new:true});
+      let question=await Question.findById(id);
+      let user=await User.findById(userId);
+
       if(!question){
         throw new CustomError("No Question Exist for given id",statusCodes.NOT_FOUND);
+      }
+
+      
+      if(!user){
+        throw new CustomError("No User Exist for given id",statusCodes.NOT_FOUND);
+      }
+
+      if(question.likedBy.includes(userId)){
+        question=await Question.updateOne({_id:id},{$pull:{likedBy:userId}});
+      }
+      else{
+         question=await Question.updateOne({_id:id},{$push:{likedBy:userId}});
       }
 
       
@@ -57,12 +72,10 @@ const updateQuestionLikes=expressAsyncHandler(async(req,res)=>{
 
 const getAllQuestion=expressAsyncHandler(async(req,res)=>{
 
-  const page=Number(req.query.page) || 1;
-  const limit=Number(req.query.limit) || 2;
-
-  const skip= (page-1)*limit;
-
-  const questions=await Question.find({}).sort({createdAt:-1}).skip(skip);
+  const page=parseInt(req.query.page) || 1;
+  const limit=parseInt(req.query.size) || 2;
+   const skip=(page-1)*limit;
+  const questions=await Question.find({}).sort({createdAt:-1}).skip(skip).limit(limit);
     
   if(!questions){
     throw new Error("No Question Available",statusCodes.NOT_FOUND);

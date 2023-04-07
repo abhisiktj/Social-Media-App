@@ -2,6 +2,10 @@ import { useState } from 'react'
 import {Link} from 'react-router-dom'
 import logo from '../Assets/Images/logo.png'
 import home from '../Assets/Images/home.png'
+import { useSelector } from 'react-redux'
+import store from '../utils/store'
+import useGetUser from '../utils/useGetUser'
+import Logout from './Logout'
 
 const Logo=()=>{
     return(
@@ -26,11 +30,15 @@ const Search=()=>{
      />)
 }
 const Utilties=()=>{
+  
+  const {isLogin,user}=useGetUser();
     return(
        <ul className='flex justify-around'>
            <li className='p-2 m-1 shrink-0'><Link to="/"><img  src={home} alt='Home'></img></Link></li>
-           <li className='p-2 m-1'><Link to="/auth/signup">Signup</Link></li>
-           <li className='p-2 m-1'><Link to="/auth/login">Login</Link></li>
+      { (isLogin) &&  <li className='p-2 m-1'><Link to="/auth/user"><img className='w-7' src={user.profilephoto} alt="Profile" /></Link></li>}
+      {(isLogin) && <Logout />}
+       { (!isLogin) &&<li className='p-2 m-1'><Link to="/auth/signup">Signup</Link></li> }
+       { (!isLogin) &&  <li className='p-2 m-1'><Link to="/auth/login">Login</Link></li> } 
        </ul>
         )
 }

@@ -1,8 +1,11 @@
 import { useState } from "react";
-import { Link } from "react-router-dom";
+import { Link,useNavigate} from "react-router-dom";
 import {useDispatch} from 'react-redux';
 import { setCredentials } from "../utils/slices/authSlice";
+
 const Signup=()=>{
+
+
     const [username,setUsername]=useState("");
     const [email,setEmail]=useState("");
     const [password,setPassword]=useState("")
@@ -11,26 +14,9 @@ const Signup=()=>{
     const [emailError,setEmailError]=useState("");
     const [passwordError,setPasswordError]=useState("");
     
-    const getData=async(url)=>{
-       
-        const response=await fetch(url,{
-            method:"POST",
-            body:JSON.stringify({
-              username,email,password
-            }),
-            headers:{
-                'Content-type':'application/json; charset=UTF-8',
-            }
-        })
-        const json=await response.json();
-        const {user,token}=json.data;
-        dispatch(setCredentials({user,token}))
-    }
-    useState(()=>{
-      getData('/api/user/register');
-     },[])
 
     const  dispatch=useDispatch();
+    const navigate=useNavigate();
 
     const validateForm=()=>{
         let validated=true;
@@ -72,11 +58,33 @@ const Signup=()=>{
 
     }
 
-    const handleSubmit=(event)=>{
+    const handleSubmit=async(event)=>{
         event.preventDefault();
         if(!validateForm())
           return;
-
+         const url='/api/user/register';
+         try{
+          const response=await fetch(url,{
+            method:"POST",
+            body:JSON.stringify({
+              username:username,
+              email:email,
+              password:password
+            }),
+           headers:{ 
+            "Content-type": "application/json; charset=UTF-8"
+           }
+        })
+        const json=await response.json();
+        const {user,token}=json.data;
+        dispatch(setCredentials({user,token}))
+        localStorage.setItem('token',token);
+        alert("logged in");
+        navigate('/');
+    }
+    catch(error){
+        console.log("Error in logging in");
+     }
     }
     return (
         <div >

@@ -41,12 +41,34 @@ const Login=()=>{
 
     }
 
-    const handleSubmit=(event)=>{
+    const handleSubmit=async(event)=>{
         event.preventDefault();
         if(!validateForm())
           return;
-
-    console.log("form validated");
+        
+          const url='/api/user/register';
+          try{
+          const response=await fetch(url,{
+            method:"POST",
+            body:JSON.stringify({
+              username:username,
+              password:password
+            }),
+           headers:{ 
+            "Content-type": "application/json; charset=UTF-8"
+           }
+        })
+        const json=await response.json();
+        const {user,token}=json.data;
+        dispatch(setCredentials({user,token}))
+        localStorage.setItem('token',token);
+        alert("logged in");
+        navigate('/');
+    }
+    catch(error){
+        console.log("Error in Login user ");
+     }
+   
     }
     return (
         <div >

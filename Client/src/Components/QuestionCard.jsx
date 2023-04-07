@@ -1,36 +1,61 @@
 import { Link } from 'react-router-dom';
 import like from '../Assets/Images/like.svg';
 import chat from '../Assets/Images/chat.png'
-
+import useGetUser from '../utils/useGetUser';
+import { useNavigate } from 'react-router-dom';
 import {useState,useEffect} from 'react'
-const QuestionCard=({title,likes,_id,askedBy})=>{
+const QuestionCard=({title,_id,askedBy,likedBy})=>{
+  const {isLogin,user}=useGetUser();
 
-  const [likeCount,setLike]=useState(likes);
-  const [liked,setLiked]=useState(false);
+  let flag=false;
+  if(isLogin){
+    if(likedBy.includes(user.id))
+       flag=true;
+  }
+
+  const [likeCount,setLike]=useState(likedBy.length);
+  const [liked,setLiked]=useState(flag);
   const [username,setUsername]=useState("");
   const [userImage,setUserImage]=useState(null);
+  const [isMounted,setIsMounted]=useState(false);
+  const navigate=useNavigate();
+
   const getData=async(url)=>{
+    try{
       const response=await fetch(url);
       const json=await response.json();
        setUsername(json.data.username);
        setUserImage(json.data.profilephoto);
+    }
+    catch(error){
+      console.log("Error in getting username and photo ");
+   }
   }
 
   const patchLikes=async(url)=>{
+    try{
     const response=await fetch(url,{
       method:'PATCH',
       body:JSON.stringify({
-        likes:likeCount
+        userId:user.id
       }),
       headers:{
         'Content-type': 'application/json; charset=UTF-8',
       }
     });
     const json=await response.json();
-    console.log(json);
+  }
+  catch(error){
+   console.log("Error in updating likes");
+ }
+   
   }
 
   const handleLike=(event)=>{
+    if(!isLogin){
+      navigate('/auth/login');
+    }
+
     if(!liked){
         setLike(likeCount+1);
         setLiked(true);
@@ -41,10 +66,13 @@ const QuestionCard=({title,likes,_id,askedBy})=>{
     }
   }
   useEffect(()=>{
-     getData(`/api/user/${askedBy}/getusernamepassword`)
+     getData(`/api/user/${askedBy}/getusernamepic`)
   })
   useEffect(()=>{
-    patchLikes(`/api/question/updatelikes/${_id}`);
+    if(isMounted)
+       patchLikes(`/api/question/updatelikes/${_id}`);
+    setIsMounted(true);
+
 },[likeCount]);
 
    return(
