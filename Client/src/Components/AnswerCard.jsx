@@ -6,7 +6,7 @@ import like from '../Assets/Images/like.svg';
 const AnswerCard=({_id,userId,content,likedBy})=>{
 
     const {isLogin,user,token}=useGetUser();
-
+    const navigate=useNavigate();
     let flag=false;
     if(isLogin){
       if(likedBy.includes(user.id))
@@ -21,6 +21,36 @@ const AnswerCard=({_id,userId,content,likedBy})=>{
     const [username,setUsername]=useState("");
     const [userImage,setUserImage]=useState(null);
 
+
+    const handleDelete=async()=>{
+
+      const perm=confirm("Are you sure you want to delete the answer");
+       if(!perm)
+          return;
+
+    try{
+    const response=await fetch(`/api/answer/${_id}`,{
+      method:"DELETE",
+      headers:{
+        "authorization":`Bearer ${token}`,
+        'Content-type': 'application/json; charset=UTF-8',
+      }
+    })
+    const json=await response.json();
+
+   if(json.success==="false"){
+    alert(json.message);
+   }
+   else{
+    const currentUrl=window.location.href;
+    console.log(currentUrl);
+      window.location.reload();
+   }
+  }
+  catch(error){
+    console.log(error);
+  }
+    }
 
     const patchLikes=async(url)=>{
         try{
@@ -57,7 +87,7 @@ const AnswerCard=({_id,userId,content,likedBy})=>{
         }
       }
 
-const getData=async(url)=>{
+ const getData=async(url)=>{
     try{
       const response=await fetch(url);
       const json=await response.json();
@@ -90,12 +120,17 @@ useEffect(()=>{
 
     return(
        <div className='border border-black m-3 p-2'>
+        <div className='flex justify-between'>
         <Link to={"/user/"+username}>
         <div className='flex justify-start'>
         <img className='w-8' src={userImage} alt="NA"></img>
-        <span className='p-2 text-sm'>{username}</span>
+        <span className='p-2 text-sm'>{username}</span></div></Link>
+        { (userId===user?.id) && <button className='bg-red-800 p-1 text-white hover:bg-red-400 rounded-md'
+       onClick={handleDelete}
+      >Delete </button>}
+      </div>
         
-      </div></Link>
+      
         <p className="my-2 text-lg">{content}</p>
          
 

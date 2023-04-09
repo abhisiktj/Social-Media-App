@@ -33,7 +33,7 @@ const SearchUser=()=>{
     }
     
     return(
-        <div>
+        <div className="overflow-auto">
         <input 
          className=" p-3 placeholder-sky-800 bg-sky-50 text-sm rounded-lg w-80 :focus outline-sky-900"
          placeholder="Search User"

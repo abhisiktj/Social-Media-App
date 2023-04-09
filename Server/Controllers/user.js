@@ -12,9 +12,11 @@ const validator=require('validator');
 const registerUser = expressAsyncHandler(async (req, res) => {
   const { username, email, password } = req.body;
 
+
   if (!username || !email || !password) {
     throw new CustomError("Provide required fields", statusCodes.BAD_REQUEST);
   }
+  
   const response = await fetch(
     `https://api.dicebear.com/6.x/pixel-art/png?seed=${username}`
   );

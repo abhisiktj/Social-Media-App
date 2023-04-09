@@ -20,6 +20,6 @@ const answerSchema=mongoose.Schema({
             ref: 'User' }],
         default:[]
      },
-})
+},{timestamps:true})
 
 module.exports=mongoose.model('Answer',answerSchema);

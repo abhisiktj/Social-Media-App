@@ -99,7 +99,7 @@ const getQuestionsByUserId=expressAsyncHandler(async()=>{
   if(!validator.isMongoId(userId))
      throw new CustomError("Invalid User Id",statusCodes.BAD_REQUEST);
 
-    const questions=await Question.find({askedBy:userId}).sort({createdAt:desc}).skip(skip);
+    const questions=await Question.find({askedBy:userId}).sort({createdAt:-1}).skip(skip).exec();
 
     if(!questions){
         throw new CustomError("No Questions Available",statusCodes.NOT_FOUND)
@@ -149,7 +149,8 @@ const getAnswersByQuestionId=expressAsyncHandler(async(req,res)=>{
  if(!question){
   throw new CustomError("No Question Exists For Give Id",statusCodes.NOT_FOUND);
  }
- const answers=await Answer.find({answeredTo:_id});
+ const answers=await Answer.find({answeredTo:_id}).sort({createdAt:-1});
+
 
 res.status(statusCodes.OK).json({
   success:true,

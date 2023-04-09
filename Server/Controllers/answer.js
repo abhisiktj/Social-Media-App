@@ -73,8 +73,30 @@ const updateAnswerLikes=expressAsyncHandler(async(req,res)=>{
       })
 })
 
+const deleteAnswerById=expressAsyncHandler(async(req,res)=>{
+  const userId=req.user._id
+  const _id=req.params.id;
+
+
+  if(!validator.isMongoId(_id)){
+     throw new CustomError("Invlid Answer Id",statusCodes.BAD_REQUEST);
+  }
+  if(!validator.isMongoId(`${userId}`)){
+   throw new CustomError("Invlid user Id",statusCodes.BAD_REQUEST);
+}
+
+  const answer=await Answer.findOneAndRemove({_id:_id,answeredBy:userId});
+  if(!answer){
+   throw new CustomError("Answer not found for given user",statusCodes.NOT_FOUND);
+  }
+  res.json({
+   success:true,
+   message:"Successfully Deleted"
+  });
+})
 
 module.exports={
     addAnswer,
-    updateAnswerLikes
+    updateAnswerLikes,
+    deleteAnswerById
 };

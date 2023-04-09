@@ -73,6 +73,10 @@ const QuestionCard=({title,_id,askedBy,likedBy,desc,displayAnsIcon})=>{
   }
 
   const handleDelete=async()=>{
+    const perm=confirm("Are you sure you want to delete the question");
+    if(!perm)
+      return;
+
     try{
     const response=await fetch(`/api/question/${_id}`,{
       method:"DELETE",
@@ -87,7 +91,12 @@ const QuestionCard=({title,_id,askedBy,likedBy,desc,displayAnsIcon})=>{
     alert(json.message);
    }
    else{
+    const currentUrl=window.location.href;
+    console.log(currentUrl);
+    if(currentUrl=='http://localhost:1234/')
        window.location.reload();
+    else
+      navigate('/');
    }
   }
   catch(error){
