@@ -4,11 +4,14 @@ import {Link} from 'react-router-dom'
 import QuestionCard from '../Components/QuestionCard'
 import SearchUser from './SearchUser';
 import { useNavigate } from 'react-router-dom';
+import useGetUser from '../utils/useGetUser';
+
 const Body=()=>{
     const [data,setData]=useState([]);
     const [filterData,setFilterData]=useState([]);
     const [sortBy,setSortBy]=useState("latest");
     const [page,setPage]=useState(1);
+    const {isLogin,user}=useGetUser();
 
     const navigate=useNavigate();
     const handleAddQuestion=()=>{
@@ -19,16 +22,22 @@ const Body=()=>{
     const getData=async(url)=>{
       try{
       const response=await fetch(url);
+      console.log(response);
       const json=await response.json();
+      if(json.success===false){
+        alert(json.message);
+    }
+    else{
         setData(json.data);
+        
         setFilterData(json.data);
-        console.log(json);
         if(json.data.length===0){
            setPage(1);
         }
       }
+      }
        catch(error){
-          console.log("Error in get all question ");
+          console.log(error);
        }
   }
 
@@ -61,7 +70,8 @@ const Body=()=>{
       <>
        <div className='flex justify-around'>
         <div className='flex justify-between my-2 w-60 h-8'>
-         <button className="bg-sky-800 py-1 px-2 text-white rounded-lg"><Link to="/question/add" onClick={handleAddQuestion}>Add Question</Link></button>
+         <button className="bg-sky-800 py-1 px-2 text-white rounded-lg">
+          <Link to={(isLogin)?"/question/add":"/auth/login"} >Add Question</Link></button>
 
         <select onChange={(event)=>{setSortBy(event.target.value)}}>
        <option value="latest">Latest</option>
@@ -72,9 +82,10 @@ const Body=()=>{
       
         </div>
 
-        <div className='w-96 border-black pl-3' >
+        <div className='w-[500] border-black ml-3' >
         {filterData?.map((data)=>{
-                    return <QuestionCard {...data} key={data._id}/>
+          const {title,_id,askedBy,likedBy}=data
+                    return <QuestionCard title={title} _id={_id} askedBy={askedBy} likedBy={likedBy} displayAnsIcon="true" key={data._id}/>
             })}
         </div>
 

@@ -80,6 +80,26 @@ const getUserNameAndPic=expressAsyncHandler(async(req,res)=>{
     }});
 })
 
+const getUserByUsername=expressAsyncHandler(async(req,res)=>{
+ const username=req.params.username;
+  const user=await User.find({username});
+    if(!user){
+        throw new CustomError("User not found for given id",statusCodes.NOT_FOUND);
+    }
+   
+    res.status(statusCodes.CREATED).json({
+      success: true,
+      data: {
+        user: {
+          id:user[0]._id,
+          username:user[0].username,
+          email:user[0].email,
+          profilephoto:user[0].profilephoto
+        },
+      },
+    });
+  });
+
 const getUserById=expressAsyncHandler(async(req,res)=>{
   const id=req.params.id;
   if(!validator.isMongoId(id)){
@@ -102,12 +122,11 @@ const getUserById=expressAsyncHandler(async(req,res)=>{
         },
       },
     });
-  });
+})
 
 const getDetailsForSearch=expressAsyncHandler(async(req,res)=>{
     const searchText=req.body.searchText;
 
-   console.log(searchText);
 
    if(searchText===""){
     res.status(statusCodes.OK).json({
@@ -127,23 +146,65 @@ const getDetailsForSearch=expressAsyncHandler(async(req,res)=>{
     else{
     const filterdUsers=[...users].filter((user)=>{
 
-      return user?.username?.includes(searchText);
+      return user?.username?.startsWith(searchText);
     })
     res.status(statusCodes.OK).json({success:true,data:filterdUsers});
   }
   }
 })
+
+
+const loginUser = expressAsyncHandler(async (req, res) => {
+  const { username, password } = req.body;
+   
+  if(!username || !password){
+    throw new CustomError("Username Or password Field empty")
+  }
+
+    const user = await User.findOne({ username });
+    if (!user){
+      throw new CustomError("User Doesn't Exist",statusCodes.NOT_FOUND);
+    }
+      
+    const isMatched=await bcrypt.compare(password,user.password);
+    
+
+  if(!isMatched){
+    throw new CustomError("Incorrect Passowrd",statusCodes.UNAUTHORIZED)
+  }
+
+  const token = jwt.sign(
+    { userId: user._id },
+    process.env.JWT_SECRETKEY,
+    { expiresIn: "30d" }
+  );
+
+  res.status(statusCodes.OK).json({
+    success: true,
+    data: {
+      user: {
+        id:user._id,
+        username:user.username,
+        email:user.email,
+        profilephoto:user.profilephoto
+      },
+      token: token,
+    },
+  });
+});
+
+
 const deleteAll=expressAsyncHandler(async(req,res)=>{ 
   const users=await User.deleteMany({});
   res.send("Deleted");
 })
 
-
-
 module.exports={
   registerUser,
   getUserNameAndPic,
   getUserById,
+  getUserByUsername,
   deleteAll,
-  getDetailsForSearch
+  getDetailsForSearch,
+  loginUser
 };

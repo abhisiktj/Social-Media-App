@@ -19,8 +19,12 @@ const SearchUser=()=>{
                 }
              });
              const json=await response.json();
-             console.log(userData);
+             if(json.success===false){
+                alert(json.message);
+            }
+            else{
              setUserData(json.data);
+            }
         }
         catch(error){
             console.log("error in search user data");
@@ -46,7 +50,7 @@ const SearchUser=()=>{
           }
         </ul>}
         {(userData.length ==0 && searchText!=="") &&
-           <p>No user Available</p>
+           <p className="p-2">No user Available</p>
         }
         </div>
 

@@ -16,9 +16,14 @@ const useGetUser=()=>{
       try{
         const response=await fetch(url);
         const json=await response.json();
+        if(json.success===false){
+          alert(json.message);
+      }
+      else{
         const userVal=json.data.user;
-        const tokenVal=localStorage.getItem(token);
+        const tokenVal=localStorage.getItem('token');
         dispatch(setCredentials({user:userVal,token:tokenVal}));
+      }
       }
       catch(error){
           console.log("Error in useGetUser")

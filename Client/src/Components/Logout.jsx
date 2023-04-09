@@ -10,10 +10,9 @@ const Logout=()=>{
         localStorage.removeItem('token');
         alert('Logged Out');
         navigate('/');
-
        }
     return(
-        <button onClick={handleClick} className="p-1 text-xs rounded-lg w-14">Log Out</button>
+        <span onClick={handleClick} className="p-1 borde  text-xs rounded-lg w-14 flex items-center hover:cursor-pointer">Log Out</span>
     )
 }
 

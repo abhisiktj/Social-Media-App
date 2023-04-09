@@ -9,6 +9,9 @@ import About from './src/Components/About'
 import Login from './src/Components/Login'
 import Signup from './src/Components/Signup'
 import Body from  './src/Components/Body';
+import AddQuestion from './src/Components/AddQuestion';
+import Question from './src/Components/Question';
+
 import { Provider } from 'react-redux';
 import store from './src/utils/store';
 
@@ -43,6 +46,14 @@ const appRouter = createBrowserRouter([
         path: "/",
         element: <Body />,
       },
+      {
+        path:'/question/add',
+        element:<AddQuestion />
+      },
+      {
+        path:'/question/:id',
+        element:<Question />
+      }
      ],
    },
    {

@@ -1,5 +1,8 @@
 import { useState } from "react";
-import { Link } from "react-router-dom";
+import { Link,useNavigate} from "react-router-dom";
+import {useDispatch} from 'react-redux';
+import {setCredentials} from '../utils/slices/authSlice';
+
 
 const Login=()=>{
     const [username,setUsername]=useState("");
@@ -7,6 +10,9 @@ const Login=()=>{
 
     const [usernameError,setUsernameError]=useState("");
     const [passwordError,setPasswordError]=useState("");
+
+    const dispatch=useDispatch();
+    const navigate=useNavigate();
 
     const validateForm=()=>{
         let validated=true;
@@ -46,7 +52,7 @@ const Login=()=>{
         if(!validateForm())
           return;
         
-          const url='/api/user/register';
+          const url='/api/user/login';
           try{
           const response=await fetch(url,{
             method:"POST",
@@ -59,14 +65,20 @@ const Login=()=>{
            }
         })
         const json=await response.json();
+
+        if(json.success===false){
+            alert(json.message);
+        }
+        else{
         const {user,token}=json.data;
         dispatch(setCredentials({user,token}))
         localStorage.setItem('token',token);
         alert("logged in");
         navigate('/');
+        }
     }
     catch(error){
-        console.log("Error in Login user ");
+        console.log(error);
      }
    
     }

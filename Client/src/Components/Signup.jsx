@@ -76,11 +76,16 @@ const Signup=()=>{
            }
         })
         const json=await response.json();
+        if(json.success===false){
+            alert(json.message);
+        }
+        else{
         const {user,token}=json.data;
         dispatch(setCredentials({user,token}))
         localStorage.setItem('token',token);
         alert("logged in");
         navigate('/');
+        }
     }
     catch(error){
         console.log("Error in logging in");

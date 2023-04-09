@@ -3,20 +3,25 @@ const Question=require('../Models/question');
 const User=require('../Models/user');
 const expressAsyncHandler=require('express-async-handler');
 const statusCodes=require('http-status-codes');
+const Answer=require('../Models/answer');
 const CustomError=require('../utils/customError');
 
 const addQuestion=expressAsyncHandler(async(req,res)=>{
      const{
-       title,desc,askedBy
+       title,desc
      }=req.body
+     const askedBy=req.user._id;
+      console.log(req.user);
 
-     if(!validator.isMongoId(askedBy))
+     if(! validator.isMongoId(`${askedBy}`))
       throw new CustomError("Asker's Id invalid",statusCodes.BAD_REQUEST)
 
      const user=await User.find({_id:askedBy});
+   
      
      if(!user)
       throw new CustomError("Question Asked by an unregisterd user",statusCodes.BAD_REQUEST);
+      req.body.askedBy=askedBy;
 
     const question=await Question.create(req.body);
     res.status(statusCodes.CREATED).json({sucess:true,data:question});
@@ -38,9 +43,9 @@ const getQuestionById=expressAsyncHandler(async(req,res)=>{
 
 const updateQuestionLikes=expressAsyncHandler(async(req,res)=>{
     const id=req.params.id;
-    const userId=req.body.userId;
+    const userId=req.user._id;
 
-    if(!validator.isMongoId(id) || !validator.isMongoId(userId))
+    if(!validator.isMongoId(id) || !validator.isMongoId(`${userId}`))
       throw new CustomError("Invalid Id",statusCodes.BAD_REQUEST);
     
       let question=await Question.findById(id);
@@ -73,7 +78,7 @@ const updateQuestionLikes=expressAsyncHandler(async(req,res)=>{
 const getAllQuestion=expressAsyncHandler(async(req,res)=>{
 
   const page=parseInt(req.query.page) || 1;
-  const limit=parseInt(req.query.size) || 2;
+  const limit=parseInt(req.query.limit) || 2;
    const skip=(page-1)*limit;
   const questions=await Question.find({}).sort({createdAt:-1}).skip(skip).limit(limit);
     
@@ -106,10 +111,60 @@ const getQuestionsByUserId=expressAsyncHandler(async()=>{
 
 })
 
+
+const deleteQuestionById=expressAsyncHandler(async(req,res)=>{
+
+  
+     const userId=req.user._id
+     const _id=req.params.id;
+  
+
+     if(!validator.isMongoId(_id)){
+        throw new CustomError("Invlid question Id",statusCodes.BAD_REQUEST);
+     }
+     if(!validator.isMongoId(`${userId}`)){
+      throw new CustomError("Invlid user Id",statusCodes.BAD_REQUEST);
+   }
+
+     const question=await Question.findOneAndRemove({_id:_id,askedBy:userId});
+     if(!question){
+      throw new CustomError("Question not found for given user",statusCodes.NOT_FOUND);
+     }
+     res.json({
+      success:true,
+      message:"Successfully Deleted"
+     });
+})
+
+const getAnswersByQuestionId=expressAsyncHandler(async(req,res)=>{
+
+  const _id=req.params.id;
+
+  if(!validator.isMongoId(_id)){
+    throw new CustomError("Invlid question Id",statusCodes.BAD_REQUEST);
+ }
+
+ const question=await Question.findById(_id);
+
+ if(!question){
+  throw new CustomError("No Question Exists For Give Id",statusCodes.NOT_FOUND);
+ }
+ const answers=await Answer.find({answeredTo:_id});
+
+res.status(statusCodes.OK).json({
+  success:true,
+  data:{answers,question}
+});
+
+})
+
+
 module.exports={
     addQuestion,
     getQuestionById,
     updateQuestionLikes,
     getAllQuestion,
-    getQuestionsByUserId
+    getQuestionsByUserId,
+    deleteQuestionById,
+    getAnswersByQuestionId
 }

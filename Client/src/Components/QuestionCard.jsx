@@ -4,8 +4,8 @@ import chat from '../Assets/Images/chat.png'
 import useGetUser from '../utils/useGetUser';
 import { useNavigate } from 'react-router-dom';
 import {useState,useEffect} from 'react'
-const QuestionCard=({title,_id,askedBy,likedBy})=>{
-  const {isLogin,user}=useGetUser();
+const QuestionCard=({title,_id,askedBy,likedBy,desc,displayAnsIcon})=>{
+  const {isLogin,user,token}=useGetUser();
 
   let flag=false;
   if(isLogin){
@@ -24,8 +24,13 @@ const QuestionCard=({title,_id,askedBy,likedBy})=>{
     try{
       const response=await fetch(url);
       const json=await response.json();
+      if(json.success===false){
+        alert(json.message);
+    }
+    else{
        setUsername(json.data.username);
        setUserImage(json.data.profilephoto);
+    }
     }
     catch(error){
       console.log("Error in getting username and photo ");
@@ -36,14 +41,15 @@ const QuestionCard=({title,_id,askedBy,likedBy})=>{
     try{
     const response=await fetch(url,{
       method:'PATCH',
-      body:JSON.stringify({
-        userId:user.id
-      }),
       headers:{
+        "authorization":`Bearer ${token}`,
         'Content-type': 'application/json; charset=UTF-8',
       }
     });
     const json=await response.json();
+    if(json.success===false){
+      alert(json.message);
+    }
   }
   catch(error){
    console.log("Error in updating likes");
@@ -65,6 +71,31 @@ const QuestionCard=({title,_id,askedBy,likedBy})=>{
         setLiked(false);
     }
   }
+
+  const handleDelete=async()=>{
+    try{
+    const response=await fetch(`/api/question/${_id}`,{
+      method:"DELETE",
+      headers:{
+        "authorization":`Bearer ${token}`,
+        'Content-type': 'application/json; charset=UTF-8',
+      }
+    })
+    const json=await response.json();
+
+   if(json.success==="false"){
+    alert(json.message);
+   }
+   else{
+       window.location.reload();
+   }
+  }
+  catch(error){
+    console.log(error);
+  }
+
+  }
+
   useEffect(()=>{
      getData(`/api/user/${askedBy}/getusernamepic`)
   })
@@ -75,19 +106,31 @@ const QuestionCard=({title,_id,askedBy,likedBy})=>{
 
 },[likeCount]);
 
+
+  
+
    return(
     <div className="border-2 border-black p-3 m-2"  >
+     <div className='flex justify-between'>
       <Link to={"/user/"+askedBy}>
         <div className='flex justify-start'>
         <img className='w-8' src={userImage} alt="NA"></img>
-        <span className='text-xl'>{username}</span>
+        <span className='p-2 text-sm'>{username}</span>
         
       </div></Link>
+     { (askedBy===user?.id) && <button className='bg-red-800 p-1 text-white hover:bg-red-400 rounded-md'
+       onClick={handleDelete}
+      >Delete </button>}
+      </div>
   
       <Link to={"/question/"+_id}>
         <div>
         <p className="text-2xl font-bold m-2">{title}</p>
       </div></Link>
+
+    {(!desc)?null :  <div>
+      <p className="text-lg m-2">{desc}</p>
+      </div>}
   
      
 
@@ -95,7 +138,7 @@ const QuestionCard=({title,_id,askedBy,likedBy})=>{
      <button onClick={handleLike}><img className="w-8"src={like} alt='like'></img></button>
     
         <span className='px-2 text-3xl'>{likeCount}</span>
-        <Link to={"/question/"+_id}><button><img className="w-8"src={chat} alt='Comment'></img></button></Link>
+       {displayAnsIcon && <Link to={"/question/"+_id}><button><img className="w-8"src={chat} alt='Comment'></img></button></Link>}
      </div>
     </div>
 

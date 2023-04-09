@@ -4,7 +4,7 @@ const answerSchema=mongoose.Schema({
 
     content:{
         type:String,
-        required:[true,'']
+        required:[true,"Content field can't be empty"]
     },
     answeredBy:{
      type: mongoose.Schema.Types.ObjectId, 
@@ -13,7 +13,13 @@ const answerSchema=mongoose.Schema({
     answeredTo:{
      type: mongoose.Schema.Types.ObjectId, 
     ref: 'Question' 
-    }
+    },
+    
+    likedBy:{
+        type:[{ type: mongoose.Schema.Types.ObjectId, 
+            ref: 'User' }],
+        default:[]
+     },
 })
 
 module.exports=mongoose.model('Answer',answerSchema);
